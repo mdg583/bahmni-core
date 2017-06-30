@@ -39,6 +39,7 @@ public class OrderSaveCommandImplTest {
         List<EncounterTransaction.Order> testOrders = Arrays.asList(new EncounterTransaction.Order());
         bahmniEncounterTransaction.setOrders(testOrders);
         when(adminService.getGlobalProperty("bahmni.encountersession.duration")).thenReturn("60");
+        when(adminService.getGlobalProperty("bahmni.encountersession.addOrderAutoexpire")).thenReturn("true");
 
         orderSaveCommand.update(bahmniEncounterTransaction);
 

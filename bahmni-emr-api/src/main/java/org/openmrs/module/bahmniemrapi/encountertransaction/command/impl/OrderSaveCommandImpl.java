@@ -15,6 +15,7 @@ public class OrderSaveCommandImpl implements EncounterDataPreSaveCommand {
 
     private AdministrationService adminService;
     public static final int DEFAULT_SESSION_DURATION_IN_MINUTES = 60;
+    public static final boolean DEFAULT_SET_AUTOEXPIRE = true;
 
     @Autowired
     public OrderSaveCommandImpl(@Qualifier("adminService") AdministrationService administrationService) {
@@ -24,10 +25,12 @@ public class OrderSaveCommandImpl implements EncounterDataPreSaveCommand {
     @Override
     public BahmniEncounterTransaction update(BahmniEncounterTransaction bahmniEncounterTransaction) {
         String configuredSessionDuration = adminService.getGlobalProperty("bahmni.encountersession.duration");
+        String configuredAutoexpire = adminService.getGlobalProperty("bahmni.encountersession.addOrderAutoexpire");
         int encounterSessionDuration = configuredSessionDuration != null ? Integer.parseInt(configuredSessionDuration) : DEFAULT_SESSION_DURATION_IN_MINUTES;
+        boolean autoExpire = configuredAutoexpire != null ? Boolean.parseBoolean(configuredAutoexpire) : DEFAULT_SET_AUTOEXPIRE;
 
         for (EncounterTransaction.Order order : bahmniEncounterTransaction.getOrders()) {
-            if(order.getAutoExpireDate() == null){
+            if(autoExpire && order.getAutoExpireDate() == null){
                 order.setAutoExpireDate(DateTime.now().plusMinutes(encounterSessionDuration).toDate());
             }
         }
